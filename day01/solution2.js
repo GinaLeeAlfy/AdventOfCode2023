@@ -4,6 +4,9 @@ const path = require("path");
 function solution(data) {
   const dataLineByLine = data.split("\n");
   let firstLastNumbers = [];
+  let firstNumbers = [];
+  let lastNumbers = [];
+
   const mapObj = {
     one: 1,
     two: 2,
@@ -15,23 +18,52 @@ function solution(data) {
     eight: 8,
     nine: 9,
   };
+
+  const reverseMapObj = {
+    eno: 1,
+    owt: 2,
+    eerht: 3,
+    ruof: 4,
+    evif: 5,
+    xis: 6,
+    neves: 7,
+    thgie: 8,
+    enin: 9,
+  };
+
   const regex = new RegExp(Object.keys(mapObj).join("|"), "gi");
+  const reverseRegex = new RegExp(Object.keys(reverseMapObj).join("|"), "gi");
 
   for (let line of dataLineByLine) {
-    line = line.replace(regex, function (matched) {
+    let frontLine = line.replace(regex, function (matched) {
       return mapObj[matched];
     });
 
-    console.log(line);
-    line = line.replace(/[^0-9]/g, "");
-    firstLastNumbers.push(Number(`${line[0]}${line[line.length - 1]}`));
+    frontLine = frontLine.replace(/[^0-9]/g, "");
+    firstNumbers.push(frontLine[0]);
+
+    let backLine = reverseString(line);
+
+    backLine = backLine.replace(reverseRegex, function (matched) {
+      return reverseMapObj[matched];
+    });
+
+    backLine = backLine.replace(/[^0-9]/g, "");
+    lastNumbers.push(backLine[0]);
   }
-  console.log(firstLastNumbers);
+  firstLastNumbers = firstNumbers.map((e, i) => e + lastNumbers[i]);
 
   let solution = firstLastNumbers.reduce((accumulator, currentValue) => {
-    return accumulator + currentValue;
+    return Number(accumulator) + Number(currentValue);
   }, 0);
   console.log(solution);
+}
+
+function reverseString(str) {
+  let splitString = str.split("");
+  let reverseArray = splitString.reverse();
+  let joinArray = reverseArray.join("");
+  return joinArray;
 }
 
 fs.readFile(path.resolve(__dirname, "input.txt"), "utf8", (err, data) => {
